@@ -7,7 +7,7 @@ extern crate serde;
 
 #[derive(Serialize, Deserialize)]
 struct Data {
-    number: String,
+    number: f64,
 }
 
 fn main() {
@@ -15,10 +15,11 @@ fn main() {
 
     server.post( "/number", middleware!( |request| {
         let data = request.json_as::<Data>().unwrap();
-        let number: String = data.number.to_string();
+        let number: f64 = data.number;
         
         let response = f_trillones(number);
-
+        // 8564564564564564564
+        
         format!("{}", response)
     }));
 
@@ -265,8 +266,9 @@ fn f_miles_billones(num: isize) -> String {
     result
 }
 
-fn f_trillones(num: String) -> String {
+fn f_trillones(num: f64) -> String {
     let mut result = String::from("");
+    let num: String = num.to_string();
     let num: isize = num.parse().unwrap();
     let divisor = 1000000000000000000;
     let cientos = num / divisor;
