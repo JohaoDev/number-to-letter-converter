@@ -17,13 +17,12 @@ fn main() {
 
     let mut server = Nickel::new();
 
-    server.get("**", middleware!("Hello World"));
-
     server.post( "/number", middleware!( |request| {
         let data = request.json_as::<Data>().unwrap();
         let number: usize = data.number;
 
-        let response = f_decenas(number).to_string();
+        // let response = f_decenas(number).to_string();
+        let response = f_millones(number);
 
         format!("{}", response)
     }));
@@ -77,38 +76,38 @@ fn f_decenas(num: usize) -> String {
         }
         3 => match unidad {
             0 => result = "TREINTA".to_string(),
-            _ => result = decenas_y("TREINTA".to_string(), unidad),
+            _ => result = f_decenas_y("TREINTA".to_string(), unidad),
         }
         4 => match unidad {
             0 => result = "CUARENTA".to_string(),
-            _ => result = decenas_y("CUARENTA".to_string(), unidad),
+            _ => result = f_decenas_y("CUARENTA".to_string(), unidad),
         }
         5 => match unidad {
             0 => result = "CINCUENTA".to_string(),
-            _ => result = decenas_y("CINCUENTA".to_string(), unidad),
+            _ => result = f_decenas_y("CINCUENTA".to_string(), unidad),
         }
         6 => match unidad {
             0 => result = "SESENTA".to_string(),
-            _ => result = decenas_y("SESENTA".to_string(), unidad),
+            _ => result = f_decenas_y("SESENTA".to_string(), unidad),
         }
         7 => match unidad {
             0 => result = "SETENTA".to_string(),
-            _ => result = decenas_y("SETENTA".to_string(), unidad),
+            _ => result = f_decenas_y("SETENTA".to_string(), unidad),
         }
         8 => match unidad {
             0 => result = "OCHENTA".to_string(),
-            _ => result = decenas_y("OCHENTA".to_string(), unidad),
+            _ => result = f_decenas_y("OCHENTA".to_string(), unidad),
         }
         9 => match unidad {
             0 => result = "NOVENTA".to_string(),
-            _ => result = decenas_y("NOVENTA".to_string(), unidad),
+            _ => result = f_decenas_y("NOVENTA".to_string(), unidad),
         }
         _ => println!(""),
     }
     result
 }
 
-fn decenas_y(str_singular: String, num_unidades: usize) -> String {
+fn f_decenas_y(str_singular: String, num_unidades: usize) -> String {
     let mut result = String::from("");
     
     if num_unidades > 0 {
@@ -119,7 +118,7 @@ fn decenas_y(str_singular: String, num_unidades: usize) -> String {
     result
 }
 
-fn centenas(num: usize) -> String {
+fn f_centenas(num: usize) -> String {
     let centenas = num / 100;
     let decena = num - (centenas * 100);
     let mut result = String::from("");
@@ -127,42 +126,42 @@ fn centenas(num: usize) -> String {
     match centenas {
         1 => {
             if decena > 0 {
-                result.push_str("CIENTO");
+                result.push_str("CIENTO ");
                 result.push_str(&f_decenas(decena).to_string());
             } else {
                 result.push_str("CIEN");
             }
         }
         2 => {
-            result.push_str("DOSCIENTOS");
+            result.push_str("DOSCIENTOS ");
             result.push_str(&f_decenas(decena).to_string());
         }
         3 => {
-            result.push_str("TRESCIENTOS");
+            result.push_str("TRESCIENTOS ");
             result.push_str(&f_decenas(decena).to_string());
         }
         4 => {
-            result.push_str("CUATROCIENTOS");
+            result.push_str("CUATROCIENTOS ");
             result.push_str(&f_decenas(decena).to_string());
         }
         5 => {
-            result.push_str("QUINIENTOS");
+            result.push_str("QUINIENTOS ");
             result.push_str(&f_decenas(decena).to_string());
         }
         6 => {
-            result.push_str("SEISCIENTOS");
+            result.push_str("SEISCIENTOS ");
             result.push_str(&f_decenas(decena).to_string());
         }
         7 => {
-            result.push_str("SETECIENTOS");
+            result.push_str("SETECIENTOS ");
             result.push_str(&f_decenas(decena).to_string());
         }
         8 => {
-            result.push_str("OCHOCIENTOS");
+            result.push_str("OCHOCIENTOS ");
             result.push_str(&f_decenas(decena).to_string());
         }
         9 => {
-            result.push_str("NOVECIENTOS");
+            result.push_str("NOVECIENTOS ");
             result.push_str(&f_decenas(decena).to_string());
         }
         _ => result = f_decenas(decena).to_string(),
@@ -170,27 +169,69 @@ fn centenas(num: usize) -> String {
     result
 }
 
-fn seccion(num: usize, divisor: usize, str_singular: String, str_plural: String) -> String {
+fn f_seccion(num: usize, divisor: usize, string_singular: String, string_plural: String) -> String {
     let cientos = num / divisor;
     let resto = num - (cientos * divisor);
     let mut result = String::from("");
 
     if cientos > 0 {
         if cientos > 1 {
-            result.push_str(&centenas(cientos).to_string());
+            result.push_str(&f_centenas(cientos).to_string());
             result.push_str(" ");
-            result.push_str(&str_plural);
+            result.push_str(&string_plural);
         } else {
-            result.push_str(&str_singular);
+            result.push_str(&string_singular);
         }
     }
 
     if resto > 0 {
         result += "";
     }
-
     result
 }
 
-//FUNCION MILES
-//FUNCION MILLONES
+fn f_miles(num: usize) -> String {
+    let mut result = String::from("");
+    let divisor = 1000;
+    let cientos = num / divisor;
+    let resto = num - (cientos * divisor);
+
+    let string_miles = f_seccion(num, divisor, String::from("UN MIL"), String::from("MIL"));
+    let string_centenas = f_centenas(resto);
+
+    if string_miles == "" {
+        result.push_str(&string_centenas);
+    } else {
+        result.push_str(&string_miles);
+        result.push_str(" ");
+        result.push_str(&string_centenas);
+    }
+    result
+}
+
+fn f_millones(num: usize) -> String {
+    let mut result = String::from("");
+    let divisor = 1000000;
+    let cientos = num / divisor;
+    let resto = num - (cientos * divisor);
+
+    let string_millones = f_seccion(num, divisor, String::from("UN MILLON DE"), String::from("MILLONES DE"));
+    let string_miles = f_miles(resto);
+
+    if string_millones == "" {
+        result.push_str(&string_miles);
+    } else {
+        result.push_str(&string_millones);
+        result.push_str(" ");
+        result.push_str(&string_miles);
+    }
+    result
+}
+
+// fn number_to_letters(num: usize) -> String {
+//     let mut result = String::from("");
+
+//     result.push_str(&f_millones(num));
+
+//     result
+// }
