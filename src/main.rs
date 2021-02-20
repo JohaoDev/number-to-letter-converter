@@ -7,23 +7,17 @@ extern crate serde;
 
 #[derive(Serialize, Deserialize)]
 struct Data {
-    number: usize,
+    number: String,
 }
 
 fn main() {
-    // let test = String::from("100000000000000000000000000000000000000"); //39
-    // let test: i128 = 1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000; //121
-    // println!("{}", test.len());
-
     let mut server = Nickel::new();
 
     server.post( "/number", middleware!( |request| {
         let data = request.json_as::<Data>().unwrap();
-        let number: usize = data.number;
-
-        // let response = f_decenas(number).to_string();
-        // let response = f_seccion(number, 1000, String::from("UN MIL"), String::from("MIL"));
-        let response = f_millones(number);
+        let number: String = data.number.to_string();
+        
+        let response = f_trillones(number);
 
         format!("{}", response)
     }));
@@ -31,7 +25,8 @@ fn main() {
     server.listen("127.0.0.1:8080").unwrap();
 }
 
-fn f_unidades(num: usize) -> String {
+
+fn f_unidades(num: isize) -> String {
     let mut result = String::from("");
 
     match num {
@@ -49,10 +44,12 @@ fn f_unidades(num: usize) -> String {
     result
 }
 
-fn f_decenas(num: usize) -> String {
+fn f_decenas(num: isize) -> String {
     let mut result = String::from("");
+    let num: String = num.to_string();
+    let num: isize = num.parse().unwrap();
     let decena = num / 10;
-    let unidad: usize = num - (decena * 10);
+    let unidad: isize = num - (decena * 10);
 
     match decena {
         1 => match unidad {
@@ -88,7 +85,7 @@ fn f_decenas(num: usize) -> String {
     result
 }
 
-fn f_decenas_y(string_singular: String, num_unidades: usize) -> String {
+fn f_decenas_y(string_singular: String, num_unidades: isize) -> String {
     let mut result = String::from("");
     
     if num_unidades > 0 {
@@ -101,7 +98,7 @@ fn f_decenas_y(string_singular: String, num_unidades: usize) -> String {
     result
 }
 
-fn f_centenas(num: usize) -> String {
+fn f_centenas(num: isize) -> String {
     let centenas = num / 100;
     let decena = num - (centenas * 100);
     let mut result = String::from("");
@@ -152,7 +149,7 @@ fn f_centenas(num: usize) -> String {
     result
 }
 
-fn f_seccion(num: usize, divisor: usize, string_singular: String, string_plural: String) -> String {
+fn f_seccion(num: isize, divisor: isize, string_singular: String, string_plural: String) -> String {
     let mut result = String::from("");
     let cientos = num / divisor;
     let resto = num - (cientos * divisor);
@@ -173,7 +170,7 @@ fn f_seccion(num: usize, divisor: usize, string_singular: String, string_plural:
     result
 }
 
-fn f_miles(num: usize) -> String {
+fn f_miles(num: isize) -> String {
     let mut result = String::from("");
     let divisor = 1000;
     let cientos = num / divisor;
@@ -192,7 +189,7 @@ fn f_miles(num: usize) -> String {
     result
 }
 
-fn f_millones(num: usize) -> String {
+fn f_millones(num: isize) -> String {
     let mut result = String::from("");
     let divisor = 1000000;
     let cientos = num / divisor;
@@ -207,6 +204,83 @@ fn f_millones(num: usize) -> String {
         result.push_str(&string_millones);
         result.push_str(" ");
         result.push_str(&string_miles);
+    }
+    result
+}
+
+fn f_miles_millones(num: isize) -> String {
+    let mut result = String::from("");
+    let divisor = 1000000000;
+    let cientos = num / divisor;
+    let resto = num - (cientos * divisor);
+
+    let string_miles_millones = f_seccion(num, divisor, String::from("MIL"), String::from("MIL"));
+    let string_millones = f_millones(resto);
+
+    if string_miles_millones == "" {
+        result.push_str(&string_millones);
+    } else {
+        result.push_str(&string_miles_millones);
+        result.push_str(" ");
+        result.push_str(&string_millones);
+    }
+    result
+}
+
+fn f_billones(num: isize) -> String {
+    let mut result = String::from("");
+    let divisor = 1000000000000;
+    let cientos = num / divisor;
+    let resto = num - (cientos * divisor);
+
+    let string_billones = f_seccion(num, divisor, String::from("UN BILLON"), String::from("BILLONES"));
+    let string_miles_millones = f_miles_millones(resto);
+
+    if string_billones == "" {
+        result.push_str(&string_miles_millones);
+    } else {
+        result.push_str(&string_billones);
+        result.push_str(" ");
+        result.push_str(&string_miles_millones);
+    }
+    result
+}
+
+fn f_miles_billones(num: isize) -> String {
+    let mut result = String::from("");
+    let divisor = 1000000000000000;
+    let cientos = num / divisor;
+    let resto = num - (cientos * divisor);
+
+    let string_miles_billones = f_seccion(num, divisor, String::from("MIL"), String::from("MIL"));
+    let string_billones = f_billones(resto);
+
+    if string_miles_billones == "" {
+        result.push_str(&string_billones);
+    } else {
+        result.push_str(&string_miles_billones);
+        result.push_str(" ");
+        result.push_str(&string_billones);
+    }
+    result
+}
+
+fn f_trillones(num: String) -> String {
+    let mut result = String::from("");
+    let num: isize = num.parse().unwrap();
+    let divisor = 1000000000000000000;
+    let cientos = num / divisor;
+    let resto = num - (cientos * divisor);
+
+    let string_trillones = f_seccion(num, divisor, String::from("UN TRILLON"), String::from("TRILLONES"));
+    let string_miles_billones = f_miles_billones(resto);
+
+    if string_trillones == "" {
+        result.push_str(&string_miles_billones);
+    } else {
+        result.push_str(&string_trillones);
+        result.push_str(" ");
+        result.push_str(&string_miles_billones);
     }
     result
 }
