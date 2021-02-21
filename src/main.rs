@@ -7,7 +7,7 @@ extern crate serde;
 
 #[derive(Serialize, Deserialize)]
 struct Data {
-    number: f64,
+    number: i128,
 }
 
 fn main() {
@@ -15,10 +15,10 @@ fn main() {
 
     server.post( "/number", middleware!( |request| {
         let data = request.json_as::<Data>().unwrap();
-        let number: f64 = data.number;
+        let number = data.number;
         
-        let response = f_trillones(number);
-        // 8564564564564564564
+        let response = f_sextillones(number);
+        // 169456456456456456456456456456456456456
         
         format!("{}", response)
     }));
@@ -27,7 +27,7 @@ fn main() {
 }
 
 
-fn f_unidades(num: isize) -> String {
+fn f_unidades(num: i128) -> String {
     let mut result = String::from("");
 
     match num {
@@ -45,12 +45,12 @@ fn f_unidades(num: isize) -> String {
     result
 }
 
-fn f_decenas(num: isize) -> String {
+fn f_decenas(num: i128) -> String {
     let mut result = String::from("");
     let num: String = num.to_string();
-    let num: isize = num.parse().unwrap();
+    let num: i128 = num.parse().unwrap();
     let decena = num / 10;
-    let unidad: isize = num - (decena * 10);
+    let unidad: i128 = num - (decena * 10);
 
     match decena {
         1 => match unidad {
@@ -86,7 +86,7 @@ fn f_decenas(num: isize) -> String {
     result
 }
 
-fn f_decenas_y(string_singular: String, num_unidades: isize) -> String {
+fn f_decenas_y(string_singular: String, num_unidades: i128) -> String {
     let mut result = String::from("");
     
     if num_unidades > 0 {
@@ -99,7 +99,7 @@ fn f_decenas_y(string_singular: String, num_unidades: isize) -> String {
     result
 }
 
-fn f_centenas(num: isize) -> String {
+fn f_centenas(num: i128) -> String {
     let centenas = num / 100;
     let decena = num - (centenas * 100);
     let mut result = String::from("");
@@ -150,7 +150,7 @@ fn f_centenas(num: isize) -> String {
     result
 }
 
-fn f_seccion(num: isize, divisor: isize, string_singular: String, string_plural: String) -> String {
+fn f_seccion(num: i128, divisor: i128, string_singular: String, string_plural: String) -> String {
     let mut result = String::from("");
     let cientos = num / divisor;
     let resto = num - (cientos * divisor);
@@ -171,7 +171,7 @@ fn f_seccion(num: isize, divisor: isize, string_singular: String, string_plural:
     result
 }
 
-fn f_miles(num: isize) -> String {
+fn f_miles(num: i128) -> String {
     let mut result = String::from("");
     let divisor = 1000;
     let cientos = num / divisor;
@@ -190,7 +190,7 @@ fn f_miles(num: isize) -> String {
     result
 }
 
-fn f_millones(num: isize) -> String {
+fn f_millones(num: i128) -> String {
     let mut result = String::from("");
     let divisor = 1000000;
     let cientos = num / divisor;
@@ -209,7 +209,7 @@ fn f_millones(num: isize) -> String {
     result
 }
 
-fn f_miles_millones(num: isize) -> String {
+fn f_miles_millones(num: i128) -> String {
     let mut result = String::from("");
     let divisor = 1000000000;
     let cientos = num / divisor;
@@ -228,7 +228,7 @@ fn f_miles_millones(num: isize) -> String {
     result
 }
 
-fn f_billones(num: isize) -> String {
+fn f_billones(num: i128) -> String {
     let mut result = String::from("");
     let divisor = 1000000000000;
     let cientos = num / divisor;
@@ -247,7 +247,7 @@ fn f_billones(num: isize) -> String {
     result
 }
 
-fn f_miles_billones(num: isize) -> String {
+fn f_miles_billones(num: i128) -> String {
     let mut result = String::from("");
     let divisor = 1000000000000000;
     let cientos = num / divisor;
@@ -266,10 +266,8 @@ fn f_miles_billones(num: isize) -> String {
     result
 }
 
-fn f_trillones(num: f64) -> String {
+fn f_trillones(num: i128) -> String {
     let mut result = String::from("");
-    let num: String = num.to_string();
-    let num: isize = num.parse().unwrap();
     let divisor = 1000000000000000000;
     let cientos = num / divisor;
     let resto = num - (cientos * divisor);
@@ -283,6 +281,120 @@ fn f_trillones(num: f64) -> String {
         result.push_str(&string_trillones);
         result.push_str(" ");
         result.push_str(&string_miles_billones);
+    }
+    result
+}
+
+fn f_miles_trillones(num: i128) -> String {
+    let mut result = String::from("");
+    let divisor = 1000000000000000000000;
+    let cientos = num / divisor;
+    let resto = num - (cientos * divisor);
+
+    let string_miles_trillones = f_seccion(num, divisor, String::from("MIL"), String::from("MIL"));
+    let string_trillones = f_trillones(resto);
+
+    if string_miles_trillones == "" {
+        result.push_str(&string_trillones);
+    } else {
+        result.push_str(&string_miles_trillones);
+        result.push_str(" ");
+        result.push_str(&string_trillones);
+    }
+    result
+}
+
+fn f_cuatrillones(num: i128) -> String {
+    let mut result = String::from("");
+    let divisor = 1000000000000000000000000;
+    let cientos = num / divisor;
+    let resto = num - (cientos * divisor);
+
+    let string_cuatrillones = f_seccion(num, divisor, String::from("UN CUATRILLON"), String::from("CUATRILLONES"));
+    let string_miles_trillones = f_miles_trillones(resto);
+
+    if string_cuatrillones == "" {
+        result.push_str(&string_miles_trillones);
+    } else {
+        result.push_str(&string_cuatrillones);
+        result.push_str(" ");
+        result.push_str(&string_miles_trillones);
+    }
+    result
+}
+
+fn f_miles_cuatrillones(num: i128) -> String {
+    let mut result = String::from("");
+    let divisor = 1000000000000000000000000000;
+    let cientos = num / divisor;
+    let resto = num - (cientos * divisor);
+
+    let string_miles_cuatrillones = f_seccion(num, divisor, String::from("MIL"), String::from("MIL"));
+    let string_cuatrillones = f_cuatrillones(resto);
+
+    if string_miles_cuatrillones == "" {
+        result.push_str(&string_cuatrillones);
+    } else {
+        result.push_str(&string_miles_cuatrillones);
+        result.push_str(" ");
+        result.push_str(&string_cuatrillones);
+    }
+    result
+}
+
+fn f_quintillones(num: i128) -> String {
+    let mut result = String::from("");
+    let divisor = 1000000000000000000000000000000;
+    let cientos = num / divisor;
+    let resto = num - (cientos * divisor);
+
+    let string_quintillones = f_seccion(num, divisor, String::from("UN QUINTILLON"), String::from("QUINTILLONES"));
+    let string_miles_cuatrillones = f_miles_cuatrillones(resto);
+
+    if string_quintillones == "" {
+        result.push_str(&string_miles_cuatrillones);
+    } else {
+        result.push_str(&string_quintillones);
+        result.push_str(" ");
+        result.push_str(&string_miles_cuatrillones);
+    }
+    result
+}
+
+fn f_miles_quintillones(num: i128) -> String {
+    let mut result = String::from("");
+    let divisor = 1000000000000000000000000000000000;
+    let cientos = num / divisor;
+    let resto = num - (cientos * divisor);
+
+    let string_miles_quintillones = f_seccion(num, divisor, String::from("MIL"), String::from("MIL"));
+    let string_quintillones = f_quintillones(resto);
+
+    if string_miles_quintillones == "" {
+        result.push_str(&string_quintillones);
+    } else {
+        result.push_str(&string_miles_quintillones);
+        result.push_str(" ");
+        result.push_str(&string_quintillones);
+    }
+    result
+}
+
+fn f_sextillones(num: i128) -> String {
+    let mut result = String::from("");
+    let divisor = 1000000000000000000000000000000000000;
+    let cientos = num / divisor;
+    let resto = num - (cientos * divisor);
+
+    let string_sextillones = f_seccion(num, divisor, String::from("UN SEXTILLON"), String::from("SEXTILLONES"));
+    let string_miles_quintillones = f_miles_quintillones(resto);
+
+    if string_sextillones == "" {
+        result.push_str(&string_miles_quintillones);
+    } else {
+        result.push_str(&string_sextillones);
+        result.push_str(" ");
+        result.push_str(&string_miles_quintillones);
     }
     result
 }
