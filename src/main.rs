@@ -17,9 +17,9 @@ fn main() {
     let mut server = Nickel::new();
 
     server.post( "/number", middleware!( |request| {
+        let response;
         let data = request.json_as::<Data>().unwrap();
         let number = data.number;
-        let response;
 
         if number.len() < 3 {
             response = cardinals::f_centenas(number.parse().unwrap());
