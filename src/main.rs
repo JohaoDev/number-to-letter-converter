@@ -16,17 +16,18 @@ struct Data {
 fn main() {
     let mut server = Nickel::new();
 
+    server.get("/", middleware!("Welcome"));
     server.post( "/number", middleware!( |request| {
         let response;
         let data = request.json_as::<Data>().unwrap();
         let number = data.number;
 
-        if number.len() < 3 {
-            response = cardinals::f_centenas(number.parse().unwrap());
-        } else {
+        if number.len() < 20 {
+            response = cardinals::f_logic(number.parse().unwrap());
+        } 
+        else {
             response = control::control(number);
         }
-
 
         format!("{}", response)
     }));
