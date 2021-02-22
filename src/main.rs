@@ -21,7 +21,6 @@ fn main() {
         let number = data.number;
         let response;
 
-        println!("{}", number.len());
         if number.len() < 3 {
             response = cardinals::f_centenas(number.parse().unwrap());
         } else {
