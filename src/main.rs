@@ -1,4 +1,5 @@
 mod control;
+mod cardinals;
 
 #[macro_use] extern crate nickel;
 
@@ -18,8 +19,15 @@ fn main() {
     server.post( "/number", middleware!( |request| {
         let data = request.json_as::<Data>().unwrap();
         let number = data.number;
-        
-        let response = control::control(number);
+        let response;
+
+        println!("{}", number.len());
+        if number.len() < 3 {
+            response = cardinals::f_centenas(number.parse().unwrap());
+        } else {
+            response = control::control(number);
+        }
+
 
         format!("{}", response)
     }));
