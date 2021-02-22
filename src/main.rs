@@ -34,3 +34,16 @@ fn main() {
 
     server.listen("127.0.0.1:8000").unwrap();
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_calc() {
+        assert_eq!(cardinals::f_logic(1), "UNO");
+        assert_eq!(cardinals::f_logic(100), "CIEN");
+        assert_eq!(cardinals::f_logic(1000000), "UN MILLON ");
+        assert_eq!(cardinals::f_logic(1000000000000000000), "UN TRILLON ");
+    }
+}

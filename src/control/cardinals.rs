@@ -18,8 +18,8 @@ fn f_unidades(num: i128) -> String {
 
 fn f_decenas(num: i128) -> String {
     let mut result = String::from("");
-    let num: String = num.to_string();
-    let num: i128 = num.parse().unwrap();
+    // let num: String = num.to_string();
+    // let num: i128 = num.parse().unwrap();
     let decena = num / 10;
     let unidad: i128 = num - (decena * 10);
 

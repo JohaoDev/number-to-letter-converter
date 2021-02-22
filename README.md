@@ -2,6 +2,7 @@
 
 In the terminal:
 
+- cargo build
 - cargo run
 
 Check the server is up:
