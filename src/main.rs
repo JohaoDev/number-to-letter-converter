@@ -1,4 +1,4 @@
-mod cardinals;
+mod control;
 
 #[macro_use] extern crate nickel;
 
@@ -9,7 +9,7 @@ extern crate serde;
 
 #[derive(Serialize, Deserialize)]
 struct Data {
-    number: i128,
+    number: String,
 }
 
 fn main() {
@@ -19,8 +19,8 @@ fn main() {
         let data = request.json_as::<Data>().unwrap();
         let number = data.number;
         
-        let response = cardinals::f_sextillones(number);
-        
+        let response = control::control(number);
+
         format!("{}", response)
     }));
 
